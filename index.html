@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英文複習樂園</title>
+<style>
+  :root{
+    --bg:#f3f7ff; --card:#ffffff; --ink:#1f2a44; --muted:#5b6b86;
+    --blue:#2f6df6; --blue-d:#1f4fd0; --green:#15a46a; --green-bg:#e4f7ee;
+    --red:#e0455a; --red-bg:#fdeaee; --gold:#f6b400; --purple:#7a5cff;
+    --line:#e3e9f5; --shadow:0 8px 28px rgba(31,42,68,.10);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Microsoft JhengHei","PingFang TC","Segoe UI",system-ui,sans-serif;
+    background:linear-gradient(160deg,#eaf1ff 0%,#f6f9ff 40%,#fff6ea 100%);
+    color:var(--ink); min-height:100vh; line-height:1.6;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:780px;margin:0 auto;padding:16px 16px 60px}
+  .topbar{display:flex;align-items:center;gap:10px;padding:10px 4px 2px}
+  .logo{font-size:26px}
+  .brand{font-weight:800;font-size:20px;letter-spacing:.5px}
+  .brand small{display:block;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:0}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-top:16px;border:1px solid var(--line)}
+  h1{font-size:26px;margin:.2em 0 .1em}
+  h2{font-size:20px;margin:.4em 0}
+  p.lead{color:var(--muted);margin:.2em 0 1em}
+  .hero{background:linear-gradient(135deg,#2f6df6,#7a5cff);color:#fff;border:none}
+  .hero h1{color:#fff;font-size:28px}
+  .hero p{color:#eaf0ff;margin:.3em 0 0}
+  .chip{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+    color:#fff;border-radius:999px;padding:3px 12px;font-size:13px;font-weight:700;margin:2px 4px 2px 0}
+  .section-title{font-weight:800;font-size:15px;color:var(--muted);margin:18px 2px 6px;letter-spacing:.5px}
+  .papers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:520px){.papers{grid-template-columns:1fr}}
+  .paper{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--card);
+    border:2px solid var(--line);border-radius:16px;padding:14px;cursor:pointer;transition:.15s;width:100%;font:inherit;color:inherit}
+  .paper:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:var(--shadow)}
+  .paper .pz{font-size:30px;line-height:1}
+  .paper b{display:block;font-size:17px}
+  .paper span{font-size:13px;color:var(--muted)}
+  .paper.random{background:linear-gradient(135deg,#fff3da,#ffe9c7);border-color:#f3d089}
+  .paper.weak{background:linear-gradient(135deg,#fde7ec,#ffeef2);border-color:#f3b6c3}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:#fff;border:none;
+    border-radius:14px;padding:13px 20px;font-size:17px;font-weight:800;cursor:pointer;transition:.15s;font-family:inherit}
+  .btn:hover{background:var(--blue-d)}
+  .btn.ghost{background:#eef3ff;color:var(--blue-d)}
+  .btn.ghost:hover{background:#dde8ff}
+  .btn.big{width:100%;padding:16px;font-size:19px}
+  .btn:disabled{opacity:.5;cursor:default}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .opts{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .seg{display:inline-flex;background:#eef3ff;border-radius:12px;padding:4px;gap:4px;flex-wrap:wrap}
+  .seg button{border:none;background:transparent;padding:8px 14px;border-radius:9px;font-weight:700;cursor:pointer;color:var(--muted);font-family:inherit;font-size:15px}
+  .seg button.on{background:#fff;color:var(--blue-d);box-shadow:0 2px 8px rgba(47,109,246,.18)}
+
+  /* quiz */
+  .qhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .progress{flex:1;height:12px;background:#e7eefc;border-radius:999px;overflow:hidden;min-width:140px}
+  .bar{height:100%;width:0;background:linear-gradient(90deg,#2f6df6,#7a5cff);border-radius:999px;transition:width .3s}
+  .meta{font-weight:800;color:var(--muted);font-size:14px;white-space:nowrap}
+  .badge{display:inline-block;background:#eef3ff;color:var(--blue-d);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:800;margin-bottom:10px}
+  .badge.weak{background:#fde7ec;color:#c23353}
+  .qtext{font-size:22px;font-weight:700;margin:6px 0 4px}
+  .qhint{color:var(--muted);font-size:15px;margin:0 0 8px}
+  .answers{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+  .ans{display:flex;align-items:center;gap:10px;text-align:left;background:#f7f9ff;border:2px solid var(--line);
+    border-radius:14px;padding:14px 16px;font-size:18px;cursor:pointer;transition:.12s;font-family:inherit;color:inherit;width:100%}
+  .ans:hover{border-color:var(--blue)}
+  .ans .k{width:26px;height:26px;border-radius:50%;background:#e7eefc;color:var(--blue-d);
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0}
+  .ans.correct{background:var(--green-bg);border-color:var(--green)}
+  .ans.correct .k{background:var(--green);color:#fff}
+  .ans.wrong{background:var(--red-bg);border-color:var(--red)}
+  .ans.wrong .k{background:var(--red);color:#fff}
+  .ans.dim{opacity:.55}
+  .ans:disabled{cursor:default}
+  .fillrow{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  input.fill{flex:1;min-width:180px;font-size:20px;padding:13px 16px;border:2px solid var(--line);border-radius:14px;font-family:inherit;outline:none}
+  input.fill:focus{border-color:var(--blue)}
+  input.fill.correct{border-color:var(--green);background:var(--green-bg)}
+  input.fill.wrong{border-color:var(--red);background:var(--red-bg)}
+  /* order */
+  .tiles,.slot{display:flex;gap:8px;flex-wrap:wrap;min-height:48px;margin-top:10px}
+  .slot{background:#f3f7ff;border:2px dashed var(--line);border-radius:14px;padding:10px;align-content:flex-start}
+  .tile{background:#fff;border:2px solid var(--line);border-radius:10px;padding:9px 13px;font-size:17px;cursor:pointer;font-family:inherit;color:inherit}
+  .tile:hover{border-color:var(--blue)}
+  .tile.used{opacity:.3;pointer-events:none}
+  .feedback{margin-top:14px;border-radius:14px;padding:14px 16px;font-size:16px;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--green-bg);border:1px solid #bfe9d3}
+  .feedback.no{background:var(--red-bg);border:1px solid #f6c6d0}
+  .feedback .ttl{font-weight:800;font-size:17px;margin-bottom:2px}
+  .feedback .corr{font-weight:800;color:var(--green)}
+  .feedback .exp{color:var(--ink);margin-top:4px}
+  .qfoot{margin-top:16px;display:flex;justify-content:flex-end;gap:10px}
+  /* result */
+  .score-big{font-size:58px;font-weight:900;line-height:1;text-align:center;margin:6px 0}
+  .score-sub{text-align:center;color:var(--muted);font-weight:700;margin-bottom:10px}
+  .bk{margin-top:10px}
+  .bk .brow{display:flex;align-items:center;gap:10px;margin:8px 0}
+  .bk .bname{width:140px;font-weight:700;font-size:14px;flex-shrink:0}
+  .bk .btrack{flex:1;height:14px;background:#eef3fc;border-radius:999px;overflow:hidden}
+  .bk .bfill{height:100%;border-radius:999px}
+  .bk .bpct{width:56px;text-align:right;font-weight:800;font-size:14px}
+  .wronglist{margin-top:14px}
+  .wrongitem{background:#fff7f8;border:1px solid #f3d0d8;border-radius:12px;padding:12px 14px;margin:8px 0;font-size:15px}
+  .wrongitem .wq{font-weight:700}
+  .wrongitem .wa{color:var(--green);font-weight:800}
+  .encourage{text-align:center;font-size:20px;font-weight:800;margin:4px 0}
+  .footnote{color:var(--muted);font-size:13px;text-align:center;margin-top:24px}
+  .kbd{font-family:ui-monospace,Consolas,monospace;background:#eef3fc;border-radius:6px;padding:1px 6px;font-size:13px}
+  .hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <span class="logo">🦸‍♂️</span>
+    <div class="brand">英文複習樂園<small>ESL 2 · 自然發音 + 文法 + 字彙 · 考前複習</small></div>
+  </div>
+
+  <!-- ===== START ===== -->
+  <div id="start">
+    <div class="card hero">
+      <h1>準備好了嗎？開始複習吧！🚀</h1>
+      <p>每次打開都有<b>不同的題目</b>，答完一題馬上告訴你正確答案！</p>
+      <div style="margin-top:10px">
+        <span class="chip">受格・反身代名詞</span>
+        <span class="chip">主詞動詞一致 ⭐</span>
+        <span class="chip">There is / are</span>
+        <span class="chip">自然發音</span>
+        <span class="chip">字彙・詞性</span>
+        <span class="chip">句子重組</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">① 選一份考卷（每份每次都會洗牌，不會一樣）</div>
+      <div class="papers" id="papers"></div>
+
+      <div class="section-title" style="margin-top:20px">② 題目數量</div>
+      <div class="seg" id="countSeg">
+        <button data-n="20">20 題</button>
+        <button data-n="35">35 題</button>
+        <button data-n="50" class="on">50 題</button>
+      </div>
+
+      <div style="margin-top:20px">
+        <button class="btn big" id="startBtn">開始複習 ✏️</button>
+      </div>
+      <p class="qhint" id="startHint" style="margin-top:12px">目前選擇：<b id="selName">A 卷 · 綜合大複習</b></p>
+    </div>
+
+    <p class="footnote">ESL 2 考前英文複習工具 · 題型參考歷次 ESL 2 考卷 · 離線可用，不需網路</p>
+  </div>
+
+  <!-- ===== QUIZ ===== -->
+  <div id="quiz" class="hide">
+    <div class="card">
+      <div class="qhead">
+        <div class="progress"><div class="bar" id="bar"></div></div>
+        <div class="meta"><span id="qnum">1</span>/<span id="qtot">50</span> · ⭐<span id="score">0</span></div>
+      </div>
+      <div style="margin-top:16px">
+        <span class="badge" id="catBadge">文法</span>
+        <div class="qtext" id="qtext"></div>
+        <div class="qhint" id="qhint"></div>
+      </div>
+      <div id="answerArea"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="qfoot">
+        <button class="btn ghost hide" id="checkBtn">送出答案</button>
+        <button class="btn hide" id="nextBtn">下一題 →</button>
+      </div>
+    </div>
+    <div class="row" style="justify-content:center;margin-top:14px">
+      <button class="btn ghost" id="quitBtn">結束並看成績</button>
+    </div>
+  </div>
+
+  <!-- ===== RESULT ===== -->
+  <div id="result" class="hide">
+    <div class="card">
+      <div class="encourage" id="encourage"></div>
+      <div class="score-big" id="finalScore">0%</div>
+      <div class="score-sub" id="finalSub">答對 0 / 0 題</div>
+      <div class="bk" id="breakdown"></div>
+    </div>
+    <div class="card" id="reviewCard">
+      <h2>📒 要再複習的題目</h2>
+      <div class="wronglist" id="wronglist"></div>
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn big" id="againBtn">再做一份新的（題目會不同）🔁</button>
+    </div>
+    <div class="row" style="justify-content:center;margin-top:10px">
+      <button class="btn ghost" id="homeBtn">回首頁選別卷</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   題庫  —  題型全部參考 ESL 2 歷次考卷
+   每題答案皆以英文文法邏輯逐題驗證，非照抄考卷
+   type: 'mc'(選擇) | 'fill'(填空,accept陣列) | 'order'(句子重組)
+   cat:  分類（也用來做成績分析與加權）
+   ========================================================= */
+const CAT = {
+  objpron:   "受格代名詞",
+  subjobj:   "主格/受格",
+  reflex:    "反身代名詞",
+  verbform:  "動詞變化(第三人稱)",
+  agree:     "主詞動詞一致 ⭐",
+  thereis:   "There is / are",
+  phonics:   "自然發音",
+  hardsoft:  "軟硬音 c / g",
+  blend:     "混合音拼讀",
+  minpair:   "聽音選字",
+  vocab:     "字彙",
+  pos:       "詞性",
+  order:     "句子重組"
+};
+const WEAK = ["agree","verbform","pos"]; // 弱項，加權出題
+
+const BANK = [
+/* ---------- 受格代名詞 objpron ---------- */
+{type:'mc',cat:'objpron',q:'My baby brother is so cute. I play with ___ every day.',opts:['he','him','his'],a:'him',exp:'介系詞 with 後面要用受格；指「弟弟（男生）」用 him。'},
+{type:'mc',cat:'objpron',q:'Kate and Jilly are my friends. I like ___ .',opts:['they','them','their'],a:'them',exp:'動詞 like 後面用受格；指兩個人用 them。'},
+{type:'mc',cat:'objpron',q:'Who is that woman? Why are you looking at ___ ?',opts:['she','her','hers'],a:'her',exp:'at 後面用受格；指 woman（女生）用 her。'},
+{type:'mc',cat:'objpron',q:'We are going to the playground. Do you want to come with ___ ?',opts:['we','us','our'],a:'us',exp:'with 後面用受格；指「我們」用 us。'},
+{type:'mc',cat:'objpron',q:'David has a new book. He bought ___ last week.',opts:['it','its','them'],a:'it',exp:'一本書是單數物品，受格用 it。'},
+{type:'mc',cat:'objpron',q:'Ben is a good boy. Miss Lin gave ___ a sticker.',opts:['he','him','his'],a:'him',exp:'gave 的受詞用受格；Ben 是男生用 him。'},
+{type:'fill',cat:'objpron',q:"I'm thirsty. Give ___ some water, please.",accept:['me'],exp:'give 後面「給我」用受格 me。'},
+{type:'mc',cat:'objpron',q:'Mrs. Doris has two daughters. I like ___ very much.',opts:['her','them','it'],a:'them',exp:'two daughters 是複數，受格用 them。'},
+{type:'mc',cat:'objpron',q:'The children found a lost puppy and took ___ to the animal shelter.',opts:['it','itself','them'],a:'it',exp:'puppy 是一隻動物（物/單數），受格用 it。'},
+{type:'mc',cat:'objpron',q:'Our coach gave ___ some useful advice before the game.',opts:['we','us','our'],a:'us',exp:'gave 的受詞「給我們」用 us。'},
+{type:'mc',cat:'objpron',q:'I put some eggs in the basket. Careful! Don’t break ___ .',opts:['it','them','they'],a:'them',exp:'eggs 是複數，受格用 them。'},
+{type:'mc',cat:'objpron',q:'The librarian saw Mia talking loudly and asked ___ to be quiet.',opts:['she','her','hers'],a:'her',exp:'asked 的受詞 Mia（女生）用 her。'},
+{type:'mc',cat:'objpron',q:'Paul talks to his parrot every day. He takes care of ___ .',opts:['it','him','them'],a:'it',exp:'一隻鸚鵡是單數動物，受格用 it。'},
+{type:'fill',cat:'objpron',q:'Because Mr. Ken is a good teacher, we give ___ a Christmas gift.',accept:['him'],exp:'Mr. Ken 是男老師，give 的受詞用 him。'},
+{type:'mc',cat:'objpron',q:'Can I go to the bookstore with ___ ? (= you and your friends)',opts:['they','you','them'],a:'you',exp:'「你和你的朋友們」對話中直接對「你們」說話，用 you。'},
+
+/* ---------- 主格/受格 subjobj ---------- */
+{type:'mc',cat:'subjobj',q:'Emma is my sister. ___ often helps me with my homework.',opts:['She','Her','Hers'],a:'She',exp:'空格是句子的「主詞」，用主格 She。'},
+{type:'mc',cat:'subjobj',q:'My dog is very hungry. ___ is waiting for me to give it food.',opts:['It','Its','Him'],a:'It',exp:'主詞是「一隻狗（動物）」，主格用 It。'},
+{type:'mc',cat:'subjobj',q:'Tom and Jack are my friends. ___ often play with me after school.',opts:['They','Them','Their'],a:'They',exp:'主詞是兩個人，主格用 They。'},
+{type:'mc',cat:'subjobj',q:'Lily is my classmate. She sits next to me, and I often talk to ___ .',opts:['she','her','hers'],a:'her',exp:'talk to 後面是受格；Lily（女生）用 her。'},
+{type:'mc',cat:'subjobj',q:'They are my classmates. They are helping ___ with my homework.',opts:['I','me','my'],a:'me',exp:'helping 的受詞「幫我」用受格 me。'},
+{type:'mc',cat:'subjobj',q:'My sister likes dogs. ___ walks them in the park every day.',opts:['She','Her','They'],a:'She',exp:'主詞是「我姊姊」，主格用 She。'},
+{type:'mc',cat:'subjobj',q:'Mom gave ( I / me / my ) a new backpack for my birthday.',opts:['I','me','my'],a:'me',exp:'gave 的受詞「給我」用受格 me。'},
+{type:'mc',cat:'subjobj',q:'The police are looking for the robbers, but they can’t find ( you / us / them ).',opts:['you','us','them'],a:'them',exp:'find 的受詞是 the robbers（他們），用 them。'},
+{type:'mc',cat:'subjobj',q:'Dad is cooking dinner for ( we / us / our ) tonight.',opts:['we','us','our'],a:'us',exp:'for 後面用受格 us。'},
+{type:'mc',cat:'subjobj',q:'Who is that cute girl? Do you know ( her / she / him )?',opts:['her','she','him'],a:'her',exp:'know 的受詞是女生，用 her。'},
+{type:'mc',cat:'subjobj',q:'Azure is singing with Lily and Julian. She likes ( they / them / him ) a lot.',opts:['they','them','him'],a:'them',exp:'likes 的受詞是兩個人，用 them。'},
+{type:'mc',cat:'subjobj',q:'Louis has a new bicycle. ___ rides it to school every day.',opts:['He','Him','His'],a:'He',exp:'主詞「他」用主格 He；it 指腳踏車。'},
+
+/* ---------- 反身代名詞 reflex ---------- */
+{type:'mc',cat:'reflex',q:'I hurt ___ when I fell off the swing.',opts:['myself','me','mineself'],a:'myself',exp:'主詞 I 對自己做動作，反身用 myself。'},
+{type:'mc',cat:'reflex',q:'Lisa looks at ___ in the mirror.',opts:['herself','himself','itself'],a:'herself',exp:'Lisa 是女生，反身用 herself。'},
+{type:'mc',cat:'reflex',q:'We learned how to play the piano ___ .',opts:['ourselves','yourselves','themselves'],a:'ourselves',exp:'主詞 We，反身用 ourselves。'},
+{type:'mc',cat:'reflex',q:'The children decorate the Christmas tree ___ .',opts:['itself','themselves','himself'],a:'themselves',exp:'the children 是複數，反身用 themselves。'},
+{type:'mc',cat:'reflex',q:'The lion can hunt for food ___ .',opts:['itself','himself','themselves'],a:'itself',exp:'the lion 是一隻動物（單數），反身用 itself。'},
+{type:'mc',cat:'reflex',q:'"Kids, did you draw the pictures ___ ?"',opts:['yourself','yourselves','themselves'],a:'yourselves',exp:'對很多小孩（you 複數）說話，反身用 yourselves。'},
+{type:'mc',cat:'reflex',q:'My brother washes the dishes ___ .',opts:['himself','herself','itself'],a:'himself',exp:'my brother 是男生，反身用 himself。'},
+{type:'mc',cat:'reflex',q:'Sam and I enjoyed ___ at the zoo.',opts:['ourselves','themselves','yourselves'],a:'ourselves',exp:'Sam and I = we，反身用 ourselves。'},
+{type:'fill',cat:'reflex',q:'I introduce ___ to the new classmate.',accept:['myself'],exp:'主詞 I，反身用 myself。'},
+{type:'mc',cat:'reflex',q:'The dog saw its own shadow and chased ___ .',opts:['itself','himself','themselves'],a:'itself',exp:'一隻狗（單數動物）追自己，用 itself。'},
+{type:'mc',cat:'reflex',q:'"Ben, did you fix the bike by ___ ?"',opts:['yourself','yourselves','himself'],a:'yourself',exp:'對一個人（Ben）說話，反身用 yourself。'},
+{type:'mc',cat:'reflex',q:'My parents taught ___ how to use the new computer.',opts:['themselves','himself','ourselves'],a:'themselves',exp:'my parents 複數，反身用 themselves。'},
+{type:'mc',cat:'reflex',q:'My parents live in the mountains by ___ .',opts:['themselves','himself','itself'],a:'themselves',exp:'my parents 複數，反身用 themselves。'},
+{type:'mc',cat:'reflex',q:'All of you can do it by ___ .',opts:['yourself','yourselves','ourselves'],a:'yourselves',exp:'all of you 是「你們」複數，用 yourselves。'},
+{type:'fill',cat:'reflex',q:'Grandma knits ___ a warm hat. (she)',accept:['herself'],exp:'Grandma 是女生，反身用 herself。'},
+/* 反身：找出並改正錯誤（改寫成「選出正確的字」） */
+{type:'mc',cat:'reflex',q:'改錯：My students clean the classroom yourself. → 正確的反身代名詞是?',opts:['themselves','yourself','ourselves'],a:'themselves',exp:'主詞 my students 複數且非 you，用 themselves。'},
+{type:'mc',cat:'reflex',q:'改錯：My brother lives by herself in Japan. → 正確的反身代名詞是?',opts:['himself','herself','itself'],a:'himself',exp:'my brother 是男生，用 himself。'},
+{type:'mc',cat:'reflex',q:'改錯：Grandpa sewed his pants by itself. → 正確的反身代名詞是?',opts:['himself','itself','themselves'],a:'himself',exp:'Grandpa 是男生（人），用 himself，不用 itself。'},
+{type:'mc',cat:'reflex',q:'改錯：My sister and I prepare dinner herself. → 正確的反身代名詞是?',opts:['ourselves','herself','themselves'],a:'ourselves',exp:'My sister and I = we，用 ourselves。'},
+{type:'mc',cat:'reflex',q:'改錯：The swimmers are training yourselves at the pool. → 正確的反身代名詞是?',opts:['themselves','yourselves','ourselves'],a:'themselves',exp:'the swimmers 是第三人稱複數，用 themselves。'},
+
+/* ---------- 動詞變化 第三人稱單數 verbform ⭐ ---------- */
+{type:'fill',cat:'verbform',q:'第三人稱單數：study → ___',accept:['studies'],exp:'子音 + y 結尾，去 y 加 ies：study→studies。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：fly → ___',accept:['flies'],exp:'子音 + y 結尾，去 y 加 ies：fly→flies。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：try → ___',accept:['tries'],exp:'子音 + y 結尾，去 y 加 ies：try→tries。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：worry → ___',accept:['worries'],exp:'子音 + y 結尾，去 y 加 ies：worry→worries。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：carry → ___',accept:['carries'],exp:'子音 + y 結尾，去 y 加 ies：carry→carries。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：play → ___',accept:['plays'],exp:'母音 + y（a+y）結尾，直接加 s：play→plays。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：pray → ___',accept:['prays'],exp:'母音 + y 結尾，直接加 s：pray→prays。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：watch → ___',accept:['watches'],exp:'ch 結尾加 es：watch→watches。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：teach → ___',accept:['teaches'],exp:'ch 結尾加 es：teach→teaches。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：miss → ___',accept:['misses'],exp:'ss 結尾加 es：miss→misses。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：pass → ___',accept:['passes'],exp:'ss 結尾加 es：pass→passes。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：push → ___',accept:['pushes'],exp:'sh 結尾加 es：push→pushes。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：brush → ___',accept:['brushes'],exp:'sh 結尾加 es：brush→brushes。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：fix → ___',accept:['fixes'],exp:'x 結尾加 es：fix→fixes。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：mix → ___',accept:['mixes'],exp:'x 結尾加 es：mix→mixes。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：go → ___',accept:['goes'],exp:'o 結尾加 es：go→goes。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：do → ___',accept:['does'],exp:'o 結尾加 es：do→does。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：have → ___',accept:['has'],exp:'have 是不規則，第三人稱單數是 has（要特別記）。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：walk → ___',accept:['walks'],exp:'一般動詞直接加 s：walk→walks。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：drive → ___',accept:['drives'],exp:'一般動詞直接加 s：drive→drives。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：enjoy → ___',accept:['enjoys'],exp:'母音 + y 結尾，直接加 s：enjoy→enjoys。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：catch → ___',accept:['catches'],exp:'ch 結尾加 es：catch→catches。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：cry → ___',accept:['cries'],exp:'子音 + y 結尾，去 y 加 ies：cry→cries。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：hurry → ___',accept:['hurries'],exp:'子音 + y 結尾，去 y 加 ies：hurry→hurries。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：wash → ___',accept:['washes'],exp:'sh 結尾加 es：wash→washes。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：wish → ___',accept:['wishes'],exp:'sh 結尾加 es：wish→wishes。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：kiss → ___',accept:['kisses'],exp:'ss 結尾加 es：kiss→kisses。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：buzz → ___',accept:['buzzes'],exp:'zz 結尾加 es：buzz→buzzes。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：stay → ___',accept:['stays'],exp:'母音 + y 結尾，直接加 s：stay→stays。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：cut → ___',accept:['cuts'],exp:'一般動詞直接加 s：cut→cuts。'},
+{type:'fill',cat:'verbform',q:'第三人稱單數：sleep → ___',accept:['sleeps'],exp:'一般動詞直接加 s：sleep→sleeps。'},
+
+/* ---------- 主詞動詞一致 agree ⭐（最弱，重點加權）---------- */
+{type:'mc',cat:'agree',q:'My grandparents ( live / lives ) in a small town.',opts:['live','lives'],a:'live',exp:'grandparents 是複數主詞，動詞用原形 live（不加 s）。'},
+{type:'mc',cat:'agree',q:'Emma ( read / reads ) a story before bedtime every night.',opts:['read','reads'],a:'reads',exp:'Emma 是單數（她），動詞加 s：reads。'},
+{type:'mc',cat:'agree',q:'We ( visit / visits ) the museum every year.',opts:['visit','visits'],a:'visit',exp:'We 用原形動詞：visit。'},
+{type:'mc',cat:'agree',q:'Jack ( carry / carries ) his lunch box to school every day.',opts:['carry','carries'],a:'carries',exp:'Jack 是單數，carry→carries。'},
+{type:'mc',cat:'agree',q:'The dog ( chase / chases ) the ball in the garden.',opts:['chase','chases'],a:'chases',exp:'the dog 是單數，動詞加 s：chases。'},
+{type:'mc',cat:'agree',q:'The boys ( watch / watches ) a movie on Friday nights.',opts:['watch','watches'],a:'watch',exp:'the boys 是複數，動詞用原形：watch。'},
+{type:'mc',cat:'agree',q:'Everyone ( have / has ) two storybooks to read.',opts:['have','has'],a:'has',exp:'everyone 當單數看待，動詞用 has。'},
+{type:'mc',cat:'agree',q:'They ( walk / walks ) to school every morning.',opts:['walk','walks'],a:'walk',exp:'They 用原形動詞：walk。'},
+{type:'mc',cat:'agree',q:'Do your brothers ( play / plays ) computer games on weekdays?',opts:['play','plays'],a:'play',exp:'Do...? 的問句中，主要動詞用原形：play。'},
+{type:'mc',cat:'agree',q:'This bird ( eat / eats ) seeds.',opts:['eat','eats'],a:'eats',exp:'this bird 是單數，動詞加 s：eats。'},
+{type:'mc',cat:'agree',q:'Water ( freeze / freezes ) when it ( is / are ) very cold.',opts:['freeze … is','freezes … is','freezes … are'],a:'freezes … is',exp:'water 不可數當單數：freezes；it 也單數：is。'},
+{type:'mc',cat:'agree',q:'My sister ( study / studies ) English after school.',opts:['study','studies'],a:'studies',exp:'my sister 單數，study→studies。'},
+{type:'mc',cat:'agree',q:'Cindy and Fred ( goes / go ) to school together.',opts:['goes','go'],a:'go',exp:'兩個人是複數主詞，動詞用原形 go。'},
+{type:'mc',cat:'agree',q:'Fish ( open / opens ) their eyes to sleep.',opts:['open','opens'],a:'open',exp:'這裡 fish 指很多魚（複數），且後面 their 也表複數，用原形 open。'},
+{type:'mc',cat:'agree',q:'Many parrots ( live / lives ) in the forest.',opts:['live','lives'],a:'live',exp:'many parrots 複數，用原形 live。'},
+{type:'mc',cat:'agree',q:'The ants ( work / works ) hard every day.',opts:['work','works'],a:'work',exp:'the ants 複數，用原形 work。'},
+{type:'mc',cat:'agree',q:'Crabs ( walk / walks ) sideways.',opts:['walk','walks'],a:'walk',exp:'crabs 複數，用原形 walk。'},
+{type:'mc',cat:'agree',q:'The sun ( rise / rises ) in the east.',opts:['rise','rises'],a:'rises',exp:'the sun 單數，動詞加 s：rises。'},
+{type:'mc',cat:'agree',q:'He ( watch / watches ) movies with his family.',opts:['watch','watches'],a:'watches',exp:'He 單數，watch→watches。'},
+{type:'mc',cat:'agree',q:'The baby ( cry / cries ) when she ( miss / misses ) her mother.',opts:['cry … miss','cries … misses','cries … miss'],a:'cries … misses',exp:'the baby/she 都是單數：cries、misses。'},
+{type:'fill',cat:'agree',q:'David ___ (walk) to school every day.',accept:['walks'],exp:'David 單數，walk→walks。'},
+{type:'fill',cat:'agree',q:'Those students ___ (read) books in the library.',accept:['read'],exp:'those students 複數，用原形 read。'},
+{type:'fill',cat:'agree',q:'My grandparents ___ (go) to the market every Sunday.',accept:['go'],exp:'grandparents 複數，用原形 go（不是 goes）。'},
+{type:'fill',cat:'agree',q:'Birds ___ (fly) in the sky.',accept:['fly'],exp:'birds 複數，用原形 fly。'},
+{type:'fill',cat:'agree',q:'The farmer ___ (grow) vegetables in his garden.',accept:['grows'],exp:'the farmer 單數，grow→grows。'},
+{type:'fill',cat:'agree',q:'My brother and I ___ (have) three new storybooks.',accept:['have'],exp:'my brother and I = we，用原形 have。'},
+{type:'fill',cat:'agree',q:'Leo ___ (have) a new pair of shoes.',accept:['has'],exp:'Leo 單數，have→has。'},
+{type:'fill',cat:'agree',q:'Every student ___ (bring) a pencil to class.',accept:['brings'],exp:'every student 當單數，bring→brings。'},
+/* 主詞動詞一致：找出並改正錯誤（選正確動詞） */
+{type:'mc',cat:'agree',q:'改錯：Many sheep lives on the farm. → 動詞應改成?',opts:['live','lives','living'],a:'live',exp:'sheep 這裡是複數（很多隻），用原形 live。'},
+{type:'mc',cat:'agree',q:'改錯：The people in the park enjoys the sunny weather. → 動詞應改成?',opts:['enjoy','enjoys','enjoying'],a:'enjoy',exp:'people 是複數，用原形 enjoy。'},
+{type:'mc',cat:'agree',q:'改錯：The children in Bella’s class studies English. → 動詞應改成?',opts:['study','studies','studys'],a:'study',exp:'the children 複數，用原形 study。'},
+{type:'mc',cat:'agree',q:'改錯：The postman deliver many letters every day. → 動詞應改成?',opts:['delivers','deliver','delivery'],a:'delivers',exp:'the postman 單數，動詞要加 s：delivers。'},
+{type:'mc',cat:'agree',q:'改錯：A pilot flys an airplane. → 動詞應改成?',opts:['flies','flys','fly'],a:'flies',exp:'子音+y：fly→flies（不是 flys）。'},
+{type:'mc',cat:'agree',q:'改錯：The school bus pass our house every morning. → 動詞應改成?',opts:['passes','pass','passing'],a:'passes',exp:'the school bus 單數，ss 結尾加 es：passes。'},
+{type:'mc',cat:'agree',q:'改錯：The baby cry loudly when he is hungry. → 動詞應改成?',opts:['cries','crys','cry'],a:'cries',exp:'the baby 單數，cry→cries。'},
+/* 主詞動詞一致：補充題 */
+{type:'mc',cat:'agree',q:'The students ( finish / finishes ) their homework before dinner.',opts:['finish','finishes'],a:'finish',exp:'the students 複數，用原形 finish。'},
+{type:'mc',cat:'agree',q:'Carina ( stay / stays ) at school until five o’clock.',opts:['stay','stays'],a:'stays',exp:'Carina 單數（她），動詞加 s：stays。'},
+{type:'mc',cat:'agree',q:'My friends ( live / lives ) near the park.',opts:['live','lives'],a:'live',exp:'my friends 複數，用原形 live。'},
+{type:'mc',cat:'agree',q:'A dog ( bark / barks ) at strangers.',opts:['bark','barks'],a:'barks',exp:'a dog 單數，動詞加 s：barks。'},
+{type:'mc',cat:'agree',q:'The teachers ( help / helps ) the students every day.',opts:['help','helps'],a:'help',exp:'the teachers 複數，用原形 help。'},
+{type:'mc',cat:'agree',q:'Mr. Lee ( teach / teaches ) math.',opts:['teach','teaches'],a:'teaches',exp:'Mr. Lee 單數，teach→teaches。'},
+{type:'mc',cat:'agree',q:'My parents ( work / works ) in a hospital.',opts:['work','works'],a:'work',exp:'my parents 複數，用原形 work。'},
+{type:'mc',cat:'agree',q:'The boys ( play / plays ) soccer every day.',opts:['play','plays'],a:'play',exp:'the boys 複數，用原形 play。'},
+{type:'mc',cat:'agree',q:'She ( do / does ) her homework after school.',opts:['do','does'],a:'does',exp:'She 單數，do→does。'},
+{type:'mc',cat:'agree',q:'My dog ( eat / eats ) twice a day.',opts:['eat','eats'],a:'eats',exp:'my dog 單數，動詞加 s：eats。'},
+{type:'mc',cat:'agree',q:'The children ( brush / brushes ) their teeth before bed.',opts:['brush','brushes'],a:'brush',exp:'the children 複數，用原形 brush。'},
+{type:'mc',cat:'agree',q:'The sun ( shine / shines ) in the morning.',opts:['shine','shines'],a:'shines',exp:'the sun 單數，動詞加 s：shines。'},
+{type:'mc',cat:'agree',q:'Birds ( build / builds ) nests in spring.',opts:['build','builds'],a:'build',exp:'birds 複數，用原形 build。'},
+{type:'mc',cat:'agree',q:'My uncle ( fix / fixes ) cars.',opts:['fix','fixes'],a:'fixes',exp:'my uncle 單數，fix→fixes。'},
+{type:'mc',cat:'agree',q:'People ( speak / speaks ) different languages.',opts:['speak','speaks'],a:'speak',exp:'people 是複數，用原形 speak。'},
+{type:'mc',cat:'agree',q:'My mother ( go / goes ) shopping on Sundays.',opts:['go','goes'],a:'goes',exp:'my mother 單數，go→goes。'},
+{type:'mc',cat:'agree',q:'The twins ( look / looks ) the same.',opts:['look','looks'],a:'look',exp:'the twins 複數，用原形 look。'},
+{type:'mc',cat:'agree',q:'A bee ( make / makes ) honey.',opts:['make','makes'],a:'makes',exp:'a bee 單數，make→makes。'},
+{type:'fill',cat:'agree',q:'My sister ___ (watch) TV every evening.',accept:['watches'],exp:'my sister 單數，watch→watches。'},
+{type:'fill',cat:'agree',q:'The farmers ___ (grow) rice.',accept:['grow'],exp:'the farmers 複數，用原形 grow。'},
+{type:'fill',cat:'agree',q:'He ___ (brush) his teeth twice a day.',accept:['brushes'],exp:'He 單數，brush→brushes。'},
+{type:'fill',cat:'agree',q:'My classmates ___ (go) home at four.',accept:['go'],exp:'my classmates 複數，用原形 go。'},
+{type:'fill',cat:'agree',q:'Cats ___ (catch) mice.',accept:['catch'],exp:'cats 複數，用原形 catch。'},
+{type:'fill',cat:'agree',q:'Daniel ___ (study) Chinese on weekends.',accept:['studies'],exp:'Daniel 單數，study→studies。'},
+{type:'fill',cat:'agree',q:'The babies ___ (cry) at night.',accept:['cry'],exp:'the babies 複數，用原形 cry。'},
+{type:'fill',cat:'agree',q:'My grandfather ___ (read) the newspaper every morning.',accept:['reads'],exp:'my grandfather 單數，read→reads。'},
+{type:'mc',cat:'agree',q:'改錯：My brothers plays basketball every weekend. → 動詞應改成?',opts:['play','plays','playing'],a:'play',exp:'my brothers 複數，用原形 play。'},
+{type:'mc',cat:'agree',q:'改錯：The teacher give us homework every day. → 動詞應改成?',opts:['gives','give','gave'],a:'gives',exp:'the teacher 單數，動詞加 s：gives。'},
+{type:'mc',cat:'agree',q:'改錯：My cat sleep all day. → 動詞應改成?',opts:['sleeps','sleep','sleeping'],a:'sleeps',exp:'my cat 單數，動詞加 s：sleeps。'},
+{type:'mc',cat:'agree',q:'改錯：The students in my class likes music. → 動詞應改成?',opts:['like','likes','liking'],a:'like',exp:'the students 複數，用原形 like。'},
+{type:'mc',cat:'agree',q:'改錯：Water boil at 100 degrees. → 動詞應改成?',opts:['boils','boil','boiling'],a:'boils',exp:'water 不可數當單數，動詞加 s：boils。'},
+{type:'mc',cat:'agree',q:'改錯：Those birds sings beautifully. → 動詞應改成?',opts:['sing','sings','singing'],a:'sing',exp:'those birds 複數，用原形 sing。'},
+{type:'mc',cat:'agree',q:'改錯：He do his homework at night. → 動詞應改成?',opts:['does','do','doing'],a:'does',exp:'He 單數，do→does。'},
+
+/* ---------- There is / are thereis ---------- */
+{type:'mc',cat:'thereis',q:'There ( is / are ) a new student in our class.',opts:['is','are'],a:'is',exp:'a new student 是單數，用 There is。'},
+{type:'mc',cat:'thereis',q:'There ( is / are ) three mice in the cage.',opts:['is','are'],a:'are',exp:'three mice 是複數（mouse 的複數），用 There are。'},
+{type:'mc',cat:'thereis',q:'There ( is / are ) some milk in the refrigerator.',opts:['is','are'],a:'is',exp:'milk 不可數，用 There is。'},
+{type:'mc',cat:'thereis',q:'There ( is / are ) two buses in front of the school.',opts:['is','are'],a:'are',exp:'two buses 複數，用 There are。'},
+{type:'mc',cat:'thereis',q:'( Is / Are ) there any students in the classroom?',opts:['Is','Are'],a:'Are',exp:'students 複數，問句用 Are there。'},
+{type:'mc',cat:'thereis',q:'( Is / Are ) there any water in the bottle?',opts:['Is','Are'],a:'Is',exp:'water 不可數，問句用 Is there。'},
+{type:'mc',cat:'thereis',q:'( Is / Are ) there any sheep on the farm?',opts:['Is','Are'],a:'Are',exp:'這裡 sheep 指很多隻（複數），用 Are there。'},
+{type:'fill',cat:'thereis',q:'___ three oxen on the farm. (陳述句)',accept:['there are'],exp:'oxen 是 ox 的複數，用 There are。'},
+{type:'fill',cat:'thereis',q:'___ a deer in the forest. (陳述句)',accept:['there is'],exp:'a deer 單數，用 There is。'},
+{type:'fill',cat:'thereis',q:'___ any milk in the refrigerator? (問句)',accept:['is there'],exp:'milk 不可數，問句用 Is there。'},
+{type:'fill',cat:'thereis',q:'___ two computers in the office? (問句)',accept:['are there'],exp:'two computers 複數，問句用 Are there。'},
+{type:'fill',cat:'thereis',q:'___ some apples in the basket. (陳述句)',accept:['there are'],exp:'some apples 複數，用 There are。'},
+{type:'mc',cat:'thereis',q:'There ( is / are ) a tall tree behind the house.',opts:['is','are'],a:'is',exp:'a tall tree 單數，用 There is。'},
+{type:'mc',cat:'thereis',q:'___ a lot of fish in the stream? ( Is there / Are there )',opts:['Is there','Are there'],a:'Are there',exp:'a lot of fish 指很多魚（複數），用 Are there。'},
+{type:'fill',cat:'thereis',q:'___ some eraser crumbs around my desk. (陳述句)',accept:['there are'],exp:'crumbs 是複數，用 There are。'},
+
+/* ---------- 自然發音 字首/字尾 phonics ---------- */
+{type:'mc',cat:'phonics',q:'哪個字首完成這個字： ___ebra（斑馬）',opts:['z','s','c'],a:'z',exp:'zebra 的開頭音是 /z/，字首是 z。'},
+{type:'mc',cat:'phonics',q:'哪個字首完成這個字： ___urse（護士）',opts:['n','m','r'],a:'n',exp:'nurse 開頭是 /n/。'},
+{type:'mc',cat:'phonics',q:'哪個字首完成這個字： ___indow（窗戶）',opts:['w','v','u'],a:'w',exp:'window 開頭是 /w/。'},
+{type:'mc',cat:'phonics',q:'哪個字尾完成這個字： balloo___（氣球）',opts:['n','m','l'],a:'n',exp:'balloon 結尾是 /n/。'},
+{type:'mc',cat:'phonics',q:'哪個字尾完成這個字： mushroo___（香菇）',opts:['m','n','w'],a:'m',exp:'mushroom 結尾是 /m/。'},
+{type:'mc',cat:'phonics',q:'哪個字尾完成這個字： wol___（狼）',opts:['f','v','ph'],a:'f',exp:'wolf 結尾是 /f/。'},
+{type:'mc',cat:'phonics',q:'哪個字尾完成這個字： shru___（聳肩）',opts:['g','k','c'],a:'g',exp:'shrug 結尾是 /g/。'},
+{type:'mc',cat:'phonics',q:'哪個字尾完成這個字： fla___（旗子）',opts:['g','k','ck'],a:'g',exp:'flag 結尾是 /g/。'},
+{type:'mc',cat:'phonics',q:'哪個字尾完成這個字： we___（蜘蛛網）',opts:['b','d','p'],a:'b',exp:'web 結尾是 /b/。'},
+{type:'mc',cat:'phonics',q:'哪個字母完成中間： h___p（跳 hop）',opts:['o','a','u'],a:'o',exp:'hop 中間是短母音 /o/。'},
+{type:'mc',cat:'phonics',q:'哪個字尾完成這個字： co___（警察 cop）',opts:['p','b','t'],a:'p',exp:'cop 結尾是 /p/。'},
+
+/* ---------- 軟硬音 c / g hardsoft ---------- */
+{type:'mc',cat:'hardsoft',q:'price 裡的 c 是哪種音?',opts:['軟音 soft c (/s/)','硬音 hard c (/k/)'],a:'軟音 soft c (/s/)',exp:'c 後面接 i（price→ce/i），通常發軟音 /s/。'},
+{type:'mc',cat:'hardsoft',q:'cabin 裡的 c 是哪種音?',opts:['硬音 hard c (/k/)','軟音 soft c (/s/)'],a:'硬音 hard c (/k/)',exp:'c 後面接 a，發硬音 /k/。'},
+{type:'mc',cat:'hardsoft',q:'center 裡的 c 是哪種音?',opts:['軟音 soft c (/s/)','硬音 hard c (/k/)'],a:'軟音 soft c (/s/)',exp:'c 後面接 e，發軟音 /s/。'},
+{type:'mc',cat:'hardsoft',q:'crab 裡的 c 是哪種音?',opts:['硬音 hard c (/k/)','軟音 soft c (/s/)'],a:'硬音 hard c (/k/)',exp:'c 後面接 r，發硬音 /k/。'},
+{type:'mc',cat:'hardsoft',q:'giraffe 裡的 g 是哪種音?',opts:['軟音 soft g (/dʒ/)','硬音 hard g (/g/)'],a:'軟音 soft g (/dʒ/)',exp:'g 後面接 i，常發軟音 /dʒ/。'},
+{type:'mc',cat:'hardsoft',q:'flag 裡的 g 是哪種音?',opts:['硬音 hard g (/g/)','軟音 soft g (/dʒ/)'],a:'硬音 hard g (/g/)',exp:'g 後面接 a（flag），發硬音 /g/。'},
+{type:'mc',cat:'hardsoft',q:'germ 裡的 g 是哪種音?',opts:['軟音 soft g (/dʒ/)','硬音 hard g (/g/)'],a:'軟音 soft g (/dʒ/)',exp:'g 後面接 e，發軟音 /dʒ/。'},
+{type:'mc',cat:'hardsoft',q:'judge 裡的 g 是哪種音?',opts:['軟音 soft g (/dʒ/)','硬音 hard g (/g/)'],a:'軟音 soft g (/dʒ/)',exp:'g 後面接 e，發軟音 /dʒ/。'},
+{type:'mc',cat:'hardsoft',q:'garden 裡的 g 是哪種音?',opts:['硬音 hard g (/g/)','軟音 soft g (/dʒ/)'],a:'硬音 hard g (/g/)',exp:'g 後面接 a，發硬音 /g/。'},
+{type:'mc',cat:'hardsoft',q:'city 裡的 c 是哪種音?',opts:['軟音 soft c (/s/)','硬音 hard c (/k/)'],a:'軟音 soft c (/s/)',exp:'c 後面接 i，發軟音 /s/。'},
+{type:'mc',cat:'hardsoft',q:'dancing 裡的 c 是哪種音?',opts:['軟音 soft c (/s/)','硬音 hard c (/k/)'],a:'軟音 soft c (/s/)',exp:'c 後面接 i，發軟音 /s/。'},
+{type:'mc',cat:'hardsoft',q:'gentle 裡的 g 是哪種音?',opts:['軟音 soft g (/dʒ/)','硬音 hard g (/g/)'],a:'軟音 soft g (/dʒ/)',exp:'g 後面接 e，發軟音 /dʒ/。'},
+
+/* ---------- 混合音拼讀 blend ---------- */
+{type:'mc',cat:'blend',q:'選字首：___ain（扭傷腳踝 sprain）',opts:['spr','str','scr','spl'],a:'spr',exp:'sprain 開頭三個音是 spr。'},
+{type:'mc',cat:'blend',q:'選字首：___eam（溪流 stream）',opts:['str','spr','scr','spl'],a:'str',exp:'stream 開頭是 str。'},
+{type:'mc',cat:'blend',q:'選字首：___ash（水花 splash）',opts:['spl','spr','str','scr'],a:'spl',exp:'splash 開頭是 spl。'},
+{type:'mc',cat:'blend',q:'選字首：___atch（抓 scratch）',opts:['scr','str','spr','spl'],a:'scr',exp:'scratch 開頭是 scr。'},
+{type:'mc',cat:'blend',q:'選字首：___inkler（灑水器 sprinkler）',opts:['spr','spl','str','scr'],a:'spr',exp:'sprinkler 開頭是 spr。'},
+{type:'mc',cat:'blend',q:'選字尾：ca___（露營 camp）',opts:['mp','nk','nt','ft'],a:'mp',exp:'camp 字尾是 mp。'},
+{type:'mc',cat:'blend',q:'選字尾：pai___（油漆 paint）',opts:['nt','mp','nk','lt'],a:'nt',exp:'paint 字尾是 nt。'},
+{type:'mc',cat:'blend',q:'選字尾：sku___（臭鼬 skunk）',opts:['nk','nt','mp','ft'],a:'nk',exp:'skunk 字尾是 nk。'},
+{type:'mc',cat:'blend',q:'選字尾：gi___（禮物 gift）',opts:['ft','lt','nt','mp'],a:'ft',exp:'gift 字尾是 ft。'},
+{type:'mc',cat:'blend',q:'選字尾：me___（融化 melt）',opts:['lt','nt','ft','nk'],a:'lt',exp:'melt 字尾是 lt。'},
+{type:'mc',cat:'blend',q:'選雙子音字尾：gra___（草 grass）',opts:['ss','ll','ff','zz'],a:'ss',exp:'grass 字尾是 ss。'},
+{type:'mc',cat:'blend',q:'選雙子音字尾：fu___（絨毛 fuzz）',opts:['zz','ss','ff','ll'],a:'zz',exp:'fuzz 字尾是 zz。'},
+{type:'mc',cat:'blend',q:'選雙子音字尾：do___（洋娃娃 doll）',opts:['ll','ss','ff','zz'],a:'ll',exp:'doll 字尾是 ll。'},
+{type:'mc',cat:'blend',q:'選雙子音字尾：sni___（嗅 sniff）',opts:['ff','ss','ll','zz'],a:'ff',exp:'sniff 字尾是 ff。'},
+{type:'mc',cat:'blend',q:'選雙子音字尾：me___（髒亂 mess）',opts:['ss','ll','ff','zz'],a:'ss',exp:'mess 字尾是 ss。'},
+
+/* ---------- 聽音選字 minpair ---------- */
+{type:'mc',cat:'minpair',q:'A ___ has black and white stripes.（斑馬）',opts:['zebra','tiger'],a:'zebra',exp:'黑白條紋的是斑馬 zebra（老虎是橘黑色）。'},
+{type:'mc',cat:'minpair',q:'I need to ___ down to tie my shoes.（彎下腰）',opts:['bend','band'],a:'bend',exp:'彎腰是 bend；band 是樂團。'},
+{type:'mc',cat:'minpair',q:'I was out walking the ___ .（狗）',opts:['dog','jog'],a:'dog',exp:'walk the dog = 遛狗。'},
+{type:'mc',cat:'minpair',q:'What ___ are we going to visit grandparents?（時間）',opts:['time','dime'],a:'time',exp:'問時間用 time；dime 是一角硬幣。'},
+{type:'mc',cat:'minpair',q:'I can ___ to school in ten minutes.（走路）',opts:['walk','talk'],a:'walk',exp:'到學校是走路 walk；talk 是說話。'},
+{type:'mc',cat:'minpair',q:'He hurt his left ___ when he fell.（手）',opts:['hand','land'],a:'hand',exp:'受傷的是 hand（手）。'},
+{type:'mc',cat:'minpair',q:'It is dark, so I light a ___ .（蠟燭）',opts:['candle','candy'],a:'candle',exp:'點亮的是蠟燭 candle；candy 是糖果。'},
+{type:'mc',cat:'minpair',q:'They live in a small ___ near the mountain.（村莊）',opts:['village','contest'],a:'village',exp:'山邊小村莊是 village。'},
+{type:'mc',cat:'minpair',q:'We play basketball in the ___ after school.（體育館）',opts:['gym','jam'],a:'gym',exp:'打籃球在 gym（體育館）；jam 是果醬。'},
+{type:'mc',cat:'minpair',q:'You need to turn off the ___ when you read.（檯燈）',opts:['lamp','vase'],a:'lamp',exp:'可以關掉的是 lamp（燈）；vase 是花瓶。'},
+{type:'mc',cat:'minpair',q:'Japan is a beautiful ___ in Asia.（國家）',opts:['country','circle'],a:'country',exp:'亞洲的國家是 country。'},
+{type:'mc',cat:'minpair',q:'He usually makes a ___ of his room.（弄亂）',opts:['mess','class'],a:'mess',exp:'把房間弄亂是 make a mess。'},
+
+/* ---------- 字彙 vocab ---------- */
+{type:'mc',cat:'vocab',q:'to save someone or something from danger（從危險中救出）',opts:['rescue','depend','flap','peer'],a:'rescue',exp:'rescue = 拯救。'},
+{type:'mc',cat:'vocab',q:'to need or count on someone（依靠、依賴）',opts:['depend','rescue','invite','share'],a:'depend',exp:'depend (on) = 依賴。'},
+{type:'mc',cat:'vocab',q:'to look at something closely（仔細看、窺視）',opts:['peer','plead','scurry','dress'],a:'peer',exp:'peer = 仔細看、窺視。'},
+{type:'mc',cat:'vocab',q:'feeling scared but still doing something anyway（勇敢的）',opts:['brave','afraid','uneasy','proud'],a:'brave',exp:'brave = 勇敢的。'},
+{type:'mc',cat:'vocab',q:'something you don’t want everybody to know（祕密）',opts:['secret','action','culture','patch'],a:'secret',exp:'secret = 祕密。'},
+{type:'mc',cat:'vocab',q:'to run quickly with small steps（快步跑）',opts:['scurry','plead','flap','count'],a:'scurry',exp:'scurry = 急忙快跑。'},
+{type:'mc',cat:'vocab',q:'to beg to get what you want（懇求）',opts:['plead','share','seem','copy'],a:'plead',exp:'plead = 懇求、哀求。'},
+{type:'mc',cat:'vocab',q:'treating everyone in the same way（公平的）',opts:['fair','proud','juicy','own'],a:'fair',exp:'fair = 公平的。'},
+{type:'mc',cat:'vocab',q:'a bird’s home（鳥巢）',opts:['nest','patch','ground','crowd'],a:'nest',exp:'nest = 鳥巢。'},
+{type:'mc',cat:'vocab',q:'having a lot of juice（多汁的）',opts:['juicy','colorful','important','uneasy'],a:'juicy',exp:'juicy = 多汁的。'},
+{type:'mc',cat:'vocab',q:'not sure about something or feeling nervous（不安的）',opts:['uneasy','brave','fair','own'],a:'uneasy',exp:'uneasy = 不安的、緊張的。'},
+{type:'mc',cat:'vocab',q:'a large number of people（人群）',opts:['crowd','culture','camera','action'],a:'crowd',exp:'crowd = 人群。'},
+{type:'mc',cat:'vocab',q:'to make something look exactly like another（複製、抄寫）',opts:['copy','count','seem','share'],a:'copy',exp:'copy = 複製、抄寫。'},
+{type:'fill',cat:'vocab',q:'The firefighters came to ___ the trapped family.（救援）',accept:['rescue'],exp:'rescue = 拯救。'},
+{type:'fill',cat:'vocab',q:'We can always ___ on our teacher when we need help.（依靠）',accept:['depend'],exp:'depend on = 依靠。'},
+{type:'fill',cat:'vocab',q:'The bird built a ___ in the tree to keep its eggs safe.（鳥巢）',accept:['nest'],exp:'nest = 鳥巢。'},
+{type:'fill',cat:'vocab',q:'Mia felt ___ of herself after she won.（驕傲）',accept:['proud'],exp:'proud = 驕傲的、自豪的。'},
+{type:'fill',cat:'vocab',q:'Please ___ the pencils to see how many there are.（數）',accept:['count'],exp:'count = 計算、數。'},
+{type:'mc',cat:'vocab',q:'belonging to oneself（屬於自己的）',opts:['own','seem','aside','fair'],a:'own',exp:'own = 自己的。'},
+{type:'mc',cat:'vocab',q:'to go to see friends or family as guests（拜訪）',opts:['visit','invite','share','depend'],a:'visit',exp:'visit = 拜訪。'},
+
+/* ---------- 詞性 pos（弱項）---------- */
+{type:'mc',cat:'pos',q:'nervously 是哪種詞性?',opts:['副詞 adv','形容詞 adj','名詞 n','動詞 v'],a:'副詞 adv',exp:'-ly 結尾、修飾動詞，是副詞 adv。'},
+{type:'mc',cat:'pos',q:'perfectly 是哪種詞性?',opts:['副詞 adv','形容詞 adj','名詞 n','動詞 v'],a:'副詞 adv',exp:'-ly 結尾、修飾動詞（做得很好），是副詞 adv。'},
+{type:'mc',cat:'pos',q:'afraid 是哪種詞性?',opts:['形容詞 adj','副詞 adv','名詞 n','動詞 v'],a:'形容詞 adj',exp:'afraid（害怕的）形容人的狀態，是形容詞 adj。'},
+{type:'mc',cat:'pos',q:'brave 是哪種詞性?',opts:['形容詞 adj','副詞 adv','名詞 n','動詞 v'],a:'形容詞 adj',exp:'brave（勇敢的）形容人，是形容詞 adj。'},
+{type:'mc',cat:'pos',q:'rescue 是哪種詞性?',opts:['動詞 v','名詞 n','形容詞 adj','副詞 adv'],a:'動詞 v',exp:'rescue（拯救）是動作，是動詞 v。'},
+{type:'mc',cat:'pos',q:'secret 在「It’s a secret.」裡是哪種詞性?',opts:['名詞 n','動詞 v','形容詞 adj','副詞 adv'],a:'名詞 n',exp:'a secret（一個祕密）是東西，名詞 n。'},
+{type:'mc',cat:'pos',q:'action 是哪種詞性?',opts:['名詞 n','動詞 v','形容詞 adj','副詞 adv'],a:'名詞 n',exp:'action（行動）是東西，名詞 n。'},
+{type:'mc',cat:'pos',q:'language 是哪種詞性?',opts:['名詞 n','動詞 v','形容詞 adj','副詞 adv'],a:'名詞 n',exp:'language（語言）是東西，名詞 n。'},
+{type:'mc',cat:'pos',q:'important 是哪種詞性?',opts:['形容詞 adj','名詞 n','動詞 v','副詞 adv'],a:'形容詞 adj',exp:'important（重要的）形容事物，是形容詞 adj。'},
+{type:'mc',cat:'pos',q:'colorful 是哪種詞性?',opts:['形容詞 adj','名詞 n','動詞 v','副詞 adv'],a:'形容詞 adj',exp:'colorful（多彩的）形容事物，是形容詞 adj。'},
+{type:'mc',cat:'pos',q:'speak 是哪種詞性?',opts:['動詞 v','名詞 n','形容詞 adj','副詞 adv'],a:'動詞 v',exp:'speak（說話）是動作，是動詞 v。'},
+{type:'mc',cat:'pos',q:'crowd 是哪種詞性?',opts:['名詞 n','動詞 v','形容詞 adj','副詞 adv'],a:'名詞 n',exp:'crowd（人群）是東西，名詞 n。'},
+{type:'mc',cat:'pos',q:'juicy 是哪種詞性?',opts:['形容詞 adj','名詞 n','動詞 v','副詞 adv'],a:'形容詞 adj',exp:'juicy（多汁的）形容食物，是形容詞 adj。'},
+{type:'mc',cat:'pos',q:'count 是哪種詞性?',opts:['動詞 v','名詞 n','形容詞 adj','副詞 adv'],a:'動詞 v',exp:'count（數數）是動作，是動詞 v。'},
+{type:'mc',cat:'pos',q:'no matter 是哪種詞類?',opts:['片語 phr','名詞 n','動詞 v','形容詞 adj'],a:'片語 phr',exp:'no matter（無論）是片語 phrase。'},
+{type:'mc',cat:'pos',q:'give out 是哪種詞類?',opts:['片語 phr','名詞 n','形容詞 adj','副詞 adv'],a:'片語 phr',exp:'give out（發放）是片語動詞 phrase。'},
+/* 詞性：補充題 */
+{type:'mc',cat:'pos',q:'quickly 是哪種詞性?',opts:['副詞 adv','形容詞 adj','名詞 n','動詞 v'],a:'副詞 adv',exp:'-ly 結尾、修飾動詞（怎麼做），是副詞 adv。'},
+{type:'mc',cat:'pos',q:'slowly 是哪種詞性?',opts:['副詞 adv','形容詞 adj','名詞 n','動詞 v'],a:'副詞 adv',exp:'-ly 結尾、修飾動詞，是副詞 adv。'},
+{type:'mc',cat:'pos',q:'slow 是哪種詞性?',opts:['形容詞 adj','副詞 adv','名詞 n','動詞 v'],a:'形容詞 adj',exp:'slow（慢的）修飾名詞，是形容詞 adj。'},
+{type:'mc',cat:'pos',q:'quietly 是哪種詞性?',opts:['副詞 adv','形容詞 adj','名詞 n','動詞 v'],a:'副詞 adv',exp:'-ly 結尾、修飾動詞，是副詞 adv。'},
+{type:'mc',cat:'pos',q:'quiet 是哪種詞性?',opts:['形容詞 adj','副詞 adv','名詞 n','動詞 v'],a:'形容詞 adj',exp:'quiet（安靜的）修飾名詞，是形容詞 adj。'},
+{type:'mc',cat:'pos',q:'carefully 是哪種詞性?',opts:['副詞 adv','形容詞 adj','名詞 n','動詞 v'],a:'副詞 adv',exp:'-ly 結尾、修飾動詞，是副詞 adv。'},
+{type:'mc',cat:'pos',q:'careful 是哪種詞性?',opts:['形容詞 adj','副詞 adv','名詞 n','動詞 v'],a:'形容詞 adj',exp:'careful（小心的）修飾名詞，是形容詞 adj。'},
+{type:'mc',cat:'pos',q:'loudly 是哪種詞性?',opts:['副詞 adv','形容詞 adj','名詞 n','動詞 v'],a:'副詞 adv',exp:'-ly 結尾、修飾動詞，是副詞 adv。'},
+{type:'mc',cat:'pos',q:'loud 是哪種詞性?',opts:['形容詞 adj','副詞 adv','名詞 n','動詞 v'],a:'形容詞 adj',exp:'loud（大聲的）修飾名詞，是形容詞 adj。'},
+{type:'mc',cat:'pos',q:'nervous 是哪種詞性?',opts:['形容詞 adj','副詞 adv','名詞 n','動詞 v'],a:'形容詞 adj',exp:'nervous（緊張的）修飾人，是形容詞 adj；加 -ly 變 nervously 才是副詞。'},
+{type:'mc',cat:'pos',q:'happily 是哪種詞性?',opts:['副詞 adv','形容詞 adj','名詞 n','動詞 v'],a:'副詞 adv',exp:'-ly 結尾、修飾動詞，是副詞 adv。'},
+{type:'mc',cat:'pos',q:'happy 是哪種詞性?',opts:['形容詞 adj','副詞 adv','名詞 n','動詞 v'],a:'形容詞 adj',exp:'happy（快樂的）修飾人，是形容詞 adj。'},
+{type:'mc',cat:'pos',q:'beautiful 是哪種詞性?',opts:['形容詞 adj','副詞 adv','名詞 n','動詞 v'],a:'形容詞 adj',exp:'beautiful（美麗的）修飾名詞，是形容詞 adj。'},
+{type:'mc',cat:'pos',q:'dangerous 是哪種詞性?',opts:['形容詞 adj','副詞 adv','名詞 n','動詞 v'],a:'形容詞 adj',exp:'dangerous（危險的）修飾名詞，是形容詞 adj。'},
+{type:'mc',cat:'pos',q:'teacher 是哪種詞性?',opts:['名詞 n','動詞 v','形容詞 adj','副詞 adv'],a:'名詞 n',exp:'teacher（老師）是人/東西，是名詞 n。'},
+{type:'mc',cat:'pos',q:'friend 是哪種詞性?',opts:['名詞 n','動詞 v','形容詞 adj','副詞 adv'],a:'名詞 n',exp:'friend（朋友）是人，是名詞 n。'},
+{type:'mc',cat:'pos',q:'music 是哪種詞性?',opts:['名詞 n','動詞 v','形容詞 adj','副詞 adv'],a:'名詞 n',exp:'music（音樂）是東西，是名詞 n。'},
+{type:'mc',cat:'pos',q:'run 是哪種詞性?',opts:['動詞 v','名詞 n','形容詞 adj','副詞 adv'],a:'動詞 v',exp:'run（跑）是動作，是動詞 v。'},
+{type:'mc',cat:'pos',q:'sing 是哪種詞性?',opts:['動詞 v','名詞 n','形容詞 adj','副詞 adv'],a:'動詞 v',exp:'sing（唱歌）是動作，是動詞 v。'},
+{type:'mc',cat:'pos',q:'water 在「Please water the plants.」裡是哪種詞性?',opts:['動詞 v','名詞 n','形容詞 adj','副詞 adv'],a:'動詞 v',exp:'這裡 water 是「澆水」的動作，當動詞 v（同一個字也可當名詞「水」）。'},
+{type:'mc',cat:'pos',q:'「a ___ dog」在名詞 dog 前面的空格，要用哪種詞?',opts:['形容詞 adj','副詞 adv','名詞 n','動詞 v'],a:'形容詞 adj',exp:'名詞前面用形容詞來形容它，例如 a big dog。'},
+{type:'mc',cat:'pos',q:'「He runs ___ .」形容「怎麼跑」的空格，要用哪種詞?',opts:['副詞 adv','形容詞 adj','名詞 n','動詞 v'],a:'副詞 adv',exp:'修飾動詞（怎麼做）要用副詞，例如 runs quickly。'},
+{type:'mc',cat:'pos',q:'修飾「動詞」的是哪種詞?',opts:['副詞 adv','形容詞 adj','名詞 n','片語 phr'],a:'副詞 adv',exp:'副詞 adv 用來修飾動詞（告訴我們怎麼做）。'},
+{type:'mc',cat:'pos',q:'修飾「名詞」的是哪種詞?',opts:['形容詞 adj','副詞 adv','動詞 v','片語 phr'],a:'形容詞 adj',exp:'形容詞 adj 用來修飾名詞（告訴我們什麼樣子）。'},
+
+/* ---------- 句子重組 order ---------- */
+{type:'order',cat:'order',q:'重組成正確句子：',tokens:['Eileen','walks','her','dog','every','evening.'],a:['Eileen','walks','her','dog','every','evening.'],exp:'主詞 Eileen(她) 單數 → walks；時間放句尾。'},
+{type:'order',cat:'order',q:'重組成正確句子：',tokens:['There','is','a','gift','under','the','big','tree.'],a:['There','is','a','gift','under','the','big','tree.'],exp:'a gift 單數 → There is；地點片語放後面。'},
+{type:'order',cat:'order',q:'重組成正確句子：',tokens:['There','is','a','boy','standing','by','the','window.'],a:['There','is','a','boy','standing','by','the','window.'],exp:'a boy 單數 → There is …。'},
+{type:'order',cat:'order',q:'重組成正確句子：',tokens:['We','drink','a','lot','of','water','every','day.'],a:['We','drink','a','lot','of','water','every','day.'],exp:'主詞 We → 原形動詞 drink。'},
+{type:'order',cat:'order',q:'重組成正確句子：',tokens:['Vic','and','Celine','like','to','go','shopping.'],a:['Vic','and','Celine','like','to','go','shopping.'],exp:'兩個人是複數主詞 → 原形 like；like to go shopping。'},
+{type:'order',cat:'order',q:'重組成正確句子：',tokens:['My','sister','studies','English','after','school.'],a:['My','sister','studies','English','after','school.'],exp:'my sister 單數 → studies。'},
+{type:'order',cat:'order',q:'重組成正確句子：',tokens:['The','children','clean','the','classroom','themselves.'],a:['The','children','clean','the','classroom','themselves.'],exp:'複數主詞 → clean；反身用 themselves。'},
+{type:'order',cat:'order',q:'重組成正確句子：',tokens:['Are','there','any','apples','in','the','basket?'],a:['Are','there','any','apples','in','the','basket?'],exp:'apples 複數的問句 → Are there…?'}
+];
+
+/* ================= 五份考卷設定 ================= */
+/* 每卷用分類配比 (weights)。random=true 代表每次自由抽樣 */
+const PAPERS = {
+  A:{name:'A 卷 · 綜合大複習',icon:'🌈',desc:'所有題型平均出題',
+     weights:{objpron:3,subjobj:2,reflex:3,verbform:3,agree:5,thereis:3,phonics:2,hardsoft:2,blend:2,minpair:2,vocab:3,pos:3,order:1}},
+  B:{name:'B 卷 · 文法大挑戰',icon:'🧩',desc:'代名詞 + 動詞 + There is',
+     weights:{objpron:3,subjobj:3,reflex:4,verbform:4,agree:6,thereis:4,order:2}},
+  C:{name:'C 卷 · 字彙與詞性',icon:'📚',desc:'字彙 + 詞性 + 聽音選字',
+     weights:{vocab:6,pos:6,minpair:5,hardsoft:2}},
+  D:{name:'D 卷 · 自然發音',icon:'🔤',desc:'拼讀 + 軟硬音 + 混合音',
+     weights:{phonics:5,hardsoft:5,blend:6,minpair:3}},
+  E:{name:'E 卷 · 弱項加強',icon:'💪',desc:'主詞動詞一致 + 詞性（重點補強）',
+     weights:{agree:8,verbform:5,pos:4,blend:2,reflex:2}},
+  R:{name:'隨機綜合卷',icon:'🎲',desc:'每次完全隨機，最有變化',random:true}
+};
+
+/* ================= 狀態 ================= */
+let state=null;
+let selectedPaper='A';
+let selectedCount=50;
+
+/* ----- 工具 ----- */
+function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function byCat(c){return BANK.filter(q=>q.cat===c);}
+function norm(s){return (s||'').toString().toLowerCase().trim().replace(/[.．。!?]+$/,'').replace(/\s+/g,' ');}
+
+/* 依卷別組題：依權重抽，抽完洗牌，補到指定題數 */
+function buildQuiz(paperKey,count){
+  const p=PAPERS[paperKey];
+  let picked=[];
+  if(p.random){
+    picked=shuffle(BANK).slice(0,count);
+  }else{
+    const pools={};Object.keys(p.weights).forEach(c=>pools[c]=shuffle(byCat(c)));
+    const w=p.weights;const cats=Object.keys(w);
+    const totalW=cats.reduce((s,c)=>s+w[c],0);
+    // 依比例分配題數
+    let plan={};let assigned=0;
+    cats.forEach(c=>{plan[c]=Math.round(count*w[c]/totalW);assigned+=plan[c];});
+    // 抽題（不夠就用該卷其他類別補）
+    cats.forEach(c=>{for(let i=0;i<plan[c]&&pools[c].length;i++)picked.push(pools[c].pop());});
+    // 補足
+    let leftover=shuffle(cats.flatMap(c=>pools[c]));
+    while(picked.length<count && leftover.length)picked.push(leftover.pop());
+    // 若該卷題庫太小，從全題庫補
+    if(picked.length<count){
+      const extra=shuffle(BANK.filter(q=>!picked.includes(q)));
+      while(picked.length<count && extra.length)picked.push(extra.pop());
+    }
+  }
+  picked=shuffle(picked).slice(0,count);
+  // 每題的選項也洗牌
+  return picked.map(q=>{
+    const item=Object.assign({},q);
+    if(item.opts)item.opts=shuffle(item.opts);
+    if(item.tokens)item.tokens=shuffle(item.tokens);
+    return item;
+  });
+}
+
+/* ================= 首頁 ================= */
+function renderPapers(){
+  const box=document.getElementById('papers');box.innerHTML='';
+  Object.keys(PAPERS).forEach(k=>{
+    const p=PAPERS[k];
+    const b=document.createElement('button');
+    b.className='paper'+(k==='R'?' random':'')+(k==='E'?' weak':'');
+    b.innerHTML=`<span class="pz">${p.icon}</span><span><b>${p.name}</b><span>${p.desc}</span></span>`;
+    b.onclick=()=>{selectedPaper=k;markSel();};
+    b.dataset.k=k;
+    box.appendChild(b);
+  });
+  markSel();
+}
+function markSel(){
+  document.querySelectorAll('.paper').forEach(el=>{
+    el.style.borderColor = el.dataset.k===selectedPaper ? 'var(--blue)' : '';
+    el.style.boxShadow = el.dataset.k===selectedPaper ? 'var(--shadow)' : '';
+  });
+  document.getElementById('selName').textContent=PAPERS[selectedPaper].name;
+}
+document.getElementById('countSeg').addEventListener('click',e=>{
+  if(e.target.dataset.n){selectedCount=+e.target.dataset.n;
+    document.querySelectorAll('#countSeg button').forEach(b=>b.classList.toggle('on',b===e.target));}
+});
+document.getElementById('startBtn').onclick=startQuiz;
+
+/* ================= 開始測驗 ================= */
+function startQuiz(){
+  const qs=buildQuiz(selectedPaper,selectedCount);
+  state={qs,idx:0,score:0,answered:0,wrong:[],perCat:{}};
+  document.getElementById('start').classList.add('hide');
+  document.getElementById('result').classList.add('hide');
+  document.getElementById('quiz').classList.remove('hide');
+  document.getElementById('qtot').textContent=qs.length;
+  renderQ();
+  window.scrollTo(0,0);
+}
+
+function catName(c){return CAT[c]||c;}
+function isWeak(c){return WEAK.includes(c);}
+
+function renderQ(){
+  const q=state.qs[state.idx];
+  document.getElementById('qnum').textContent=state.idx+1;
+  document.getElementById('score').textContent=state.score;
+  document.getElementById('bar').style.width=((state.idx)/state.qs.length*100)+'%';
+  const badge=document.getElementById('catBadge');
+  badge.textContent=catName(q.cat);
+  badge.className='badge'+(isWeak(q.cat)?' weak':'');
+  document.getElementById('qtext').textContent=q.q;
+  document.getElementById('qhint').textContent = q.type==='fill' ? '✍️ 請打字作答（英文）' : (q.type==='order'?'👆 點字卡排出正確順序':'👆 點一個答案');
+  const fb=document.getElementById('feedback');fb.className='feedback';fb.innerHTML='';
+  document.getElementById('nextBtn').classList.add('hide');
+  const checkBtn=document.getElementById('checkBtn');
+  const area=document.getElementById('answerArea');area.innerHTML='';
+
+  if(q.type==='mc'){
+    checkBtn.classList.add('hide');
+    const wrap=document.createElement('div');wrap.className='answers';
+    q.opts.forEach((opt,i)=>{
+      const b=document.createElement('button');b.className='ans';
+      b.innerHTML=`<span class="k">${String.fromCharCode(65+i)}</span><span>${opt}</span>`;
+      b.onclick=()=>pickMC(b,opt,q);
+      wrap.appendChild(b);
+    });
+    area.appendChild(wrap);
+  }else if(q.type==='fill'){
+    checkBtn.classList.remove('hide');
+    const row=document.createElement('div');row.className='fillrow';
+    const inp=document.createElement('input');inp.className='fill';inp.id='fillInput';
+    inp.placeholder='在這裡打答案…';inp.autocomplete='off';inp.autocapitalize='off';inp.spellcheck=false;
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkFill(q);});
+    row.appendChild(inp);area.appendChild(row);
+    setTimeout(()=>inp.focus(),50);
+    checkBtn.onclick=()=>checkFill(q);
+  }else if(q.type==='order'){
+    checkBtn.classList.remove('hide');
+    checkBtn.textContent='送出答案';
+    const slot=document.createElement('div');slot.className='slot';slot.id='slot';
+    const tiles=document.createElement('div');tiles.className='tiles';tiles.id='tiles';
+    q.tokens.forEach((t,i)=>{
+      const b=document.createElement('button');b.className='tile';b.textContent=t;b.dataset.i=i;
+      b.onclick=()=>{moveToSlot(b);};
+      tiles.appendChild(b);
+    });
+    const lbl=document.createElement('div');lbl.className='qhint';lbl.textContent='你排的句子：';
+    area.appendChild(lbl);area.appendChild(slot);
+    const lbl2=document.createElement('div');lbl2.className='qhint';lbl2.style.marginTop='10px';lbl2.textContent='字卡（點選加入）：';
+    area.appendChild(lbl2);area.appendChild(tiles);
+    state._order=[];
+    checkBtn.onclick=()=>checkOrder(q);
+  }
+}
+
+function moveToSlot(btn){
+  const slot=document.getElementById('slot');
+  const t=document.createElement('button');t.className='tile';t.textContent=btn.textContent;
+  t.onclick=()=>{t.remove();btn.classList.remove('used');syncOrder();};
+  slot.appendChild(t);btn.classList.add('used');syncOrder();
+}
+function syncOrder(){
+  state._order=[...document.querySelectorAll('#slot .tile')].map(t=>t.textContent);
+}
+
+function pickMC(btn,opt,q){
+  const correct = opt===q.a;
+  document.querySelectorAll('#answerArea .ans').forEach(b=>{
+    b.disabled=true;
+    const txt=b.querySelector('span:last-child').textContent;
+    if(txt===q.a)b.classList.add('correct');
+    else if(b===btn)b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+  finishQ(correct,q,q.a);
+}
+
+function checkFill(q){
+  const inp=document.getElementById('fillInput');if(!inp)return;
+  if(!inp.value.trim()){inp.focus();return;}
+  const ok=q.accept.map(norm).includes(norm(inp.value));
+  inp.disabled=true;inp.classList.add(ok?'correct':'wrong');
+  document.getElementById('checkBtn').classList.add('hide');
+  finishQ(ok,q,q.accept[0]);
+}
+
+function checkOrder(q){
+  syncOrder();
+  if(state._order.length!==q.a.length){
+    const fb=document.getElementById('feedback');fb.className='feedback no show';
+    fb.innerHTML='<div class="ttl">還沒排完喔！</div><div class="exp">請把所有字卡都用上。</div>';
+    return;
+  }
+  const ok=norm(state._order.join(' '))===norm(q.a.join(' '));
+  document.querySelectorAll('#tiles .tile').forEach(b=>b.disabled=true);
+  document.getElementById('checkBtn').classList.add('hide');
+  finishQ(ok,q,q.a.join(' '));
+}
+
+function finishQ(ok,q,correctText){
+  state.answered++;
+  if(!state.perCat[q.cat])state.perCat[q.cat]={right:0,total:0};
+  state.perCat[q.cat].total++;
+  if(ok){state.score++;state.perCat[q.cat].right++;}
+  else{state.wrong.push({q:q.q,a:correctText,exp:q.exp,cat:q.cat});}
+  document.getElementById('score').textContent=state.score;
+  const fb=document.getElementById('feedback');
+  fb.className='feedback show '+(ok?'ok':'no');
+  const praise=['太棒了！','答對了！','很厲害！','就是這個！','你好強！'];
+  if(ok){
+    fb.innerHTML=`<div class="ttl">✅ ${praise[Math.floor(Math.random()*praise.length)]}</div>`+
+      (q.exp?`<div class="exp">💡 ${q.exp}</div>`:'');
+  }else{
+    fb.innerHTML=`<div class="ttl">❌ 再看一次～</div>`+
+      `<div>正確答案是：<span class="corr">${correctText}</span></div>`+
+      (q.exp?`<div class="exp">💡 ${q.exp}</div>`:'');
+  }
+  const next=document.getElementById('nextBtn');
+  next.classList.remove('hide');
+  next.textContent = state.idx+1>=state.qs.length ? '看成績 🎉' : '下一題 →';
+  next.focus();
+}
+
+document.getElementById('nextBtn').onclick=()=>{
+  if(state.idx+1>=state.qs.length){showResult();}
+  else{state.idx++;renderQ();window.scrollTo({top:0,behavior:'smooth'});}
+};
+document.getElementById('quitBtn').onclick=()=>{if(state.answered===0){goHome();}else showResult();};
+
+/* ================= 成績 ================= */
+function showResult(){
+  document.getElementById('quiz').classList.add('hide');
+  document.getElementById('result').classList.remove('hide');
+  const total=state.answered;const right=state.score;
+  const pct=total?Math.round(right/total*100):0;
+  document.getElementById('finalScore').textContent=pct+'%';
+  document.getElementById('finalSub').textContent=`答對 ${right} / ${total} 題`;
+  const enc=document.getElementById('encourage');
+  let msg='🎉 ';
+  if(pct>=90)msg+='太厲害了！幾乎全對！';
+  else if(pct>=75)msg+='做得很好！再複習錯的就更棒了！';
+  else if(pct>=60)msg+='不錯喔！把下面的重點多看幾次！';
+  else msg+='沒關係，多練幾次一定會進步！';
+  enc.textContent=msg;
+
+  // 分類分析
+  const bk=document.getElementById('breakdown');bk.innerHTML='<div class="section-title" style="margin-top:4px">各項表現</div>';
+  const cats=Object.keys(state.perCat).sort((a,b)=>(state.perCat[a].right/state.perCat[a].total)-(state.perCat[b].right/state.perCat[b].total));
+  cats.forEach(c=>{
+    const d=state.perCat[c];const p=Math.round(d.right/d.total*100);
+    const color=p>=80?'var(--green)':p>=50?'var(--gold)':'var(--red)';
+    const row=document.createElement('div');row.className='brow';
+    row.innerHTML=`<div class="bname">${catName(c)}</div>
+      <div class="btrack"><div class="bfill" style="width:${p}%;background:${color}"></div></div>
+      <div class="bpct">${d.right}/${d.total}</div>`;
+    bk.appendChild(row);
+  });
+
+  // 錯題複習
+  const wl=document.getElementById('wronglist');wl.innerHTML='';
+  const rc=document.getElementById('reviewCard');
+  if(state.wrong.length===0){
+    rc.classList.add('hide');
+  }else{
+    rc.classList.remove('hide');
+    state.wrong.forEach(w=>{
+      const d=document.createElement('div');d.className='wrongitem';
+      d.innerHTML=`<div class="wq">${w.q}</div>
+        <div>✔ 正確答案：<span class="wa">${w.a}</span></div>
+        ${w.exp?`<div style="color:var(--muted);margin-top:3px">💡 ${w.exp}</div>`:''}`;
+      wl.appendChild(d);
+    });
+  }
+  window.scrollTo(0,0);
+}
+
+document.getElementById('againBtn').onclick=()=>startQuiz();
+document.getElementById('homeBtn').onclick=goHome;
+function goHome(){
+  document.getElementById('quiz').classList.add('hide');
+  document.getElementById('result').classList.add('hide');
+  document.getElementById('start').classList.remove('hide');
+  window.scrollTo(0,0);
+}
+
+/* 初始化 */
+renderPapers();
+</script>
+</body>
+</html>
